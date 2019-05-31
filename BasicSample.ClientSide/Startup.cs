@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Components.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace BasicSample.ClientSide
+namespace Sample.ClientSide
 {
     public class Startup
     {
