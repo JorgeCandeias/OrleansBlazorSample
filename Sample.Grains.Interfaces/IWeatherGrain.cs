@@ -1,11 +1,12 @@
 ﻿using Orleans;
 using Sample.Grains.Models;
 using System.Collections.Immutable;
+using System.Threading.Tasks;
 
 namespace Sample.Grains
 {
-    public interface IWeatherGrain : IGrainWithStringKey
+    public interface IWeatherGrain : IGrainWithGuidKey
     {
-        ImmutableList<WeatherInfo> GetLatestWeatherAsync();
+        Task<ImmutableList<WeatherInfo>> GetLatestWeatherAsync();
     }
 }

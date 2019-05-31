@@ -2,6 +2,7 @@
 using Sample.Grains.Models;
 using System;
 using System.Collections.Immutable;
+using System.Threading.Tasks;
 
 namespace Sample.Grains
 {
@@ -14,6 +15,6 @@ namespace Sample.Grains
             new WeatherInfo(new DateTime(2018, 5, 9), -16, "Balmy", 4),
             new WeatherInfo(new DateTime(2018, 5, 10), -2, "Chilly", 29));
 
-        public ImmutableList<WeatherInfo> GetLatestWeatherAsync() => data;
+        public Task<ImmutableList<WeatherInfo>> GetLatestWeatherAsync() => Task.FromResult(data);
     }
 }

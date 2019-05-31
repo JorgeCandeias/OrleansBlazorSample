@@ -21,6 +21,8 @@ namespace Sample.Silo
                 .ConfigureLogging(builder =>
                 {
                     builder.AddConsole();
+                    builder.AddFilter("Orleans.Runtime.Management.ManagementGrain", LogLevel.Warning);
+                    builder.AddFilter("Orleans.Runtime.SiloControl", LogLevel.Warning);
                 })
                 .ConfigureServices(services =>
                 {
