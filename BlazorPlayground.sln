@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Grains", "Sample.Gra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Grains.Interfaces", "Sample.Grains.Interfaces\Sample.Grains.Interfaces.csproj", "{F8CFE01B-C8FF-4529-950E-EFC6B44B6BAE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Silo", "Sample.Silo\Sample.Silo.csproj", "{699023C9-9C57-47C7-9B5D-2197371F51FE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{F8CFE01B-C8FF-4529-950E-EFC6B44B6BAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8CFE01B-C8FF-4529-950E-EFC6B44B6BAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8CFE01B-C8FF-4529-950E-EFC6B44B6BAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{699023C9-9C57-47C7-9B5D-2197371F51FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{699023C9-9C57-47C7-9B5D-2197371F51FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{699023C9-9C57-47C7-9B5D-2197371F51FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{699023C9-9C57-47C7-9B5D-2197371F51FE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
