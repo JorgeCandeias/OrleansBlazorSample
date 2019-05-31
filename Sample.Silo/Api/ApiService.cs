@@ -5,12 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Orleans;
-using Sample.Silo.Api;
 using Swashbuckle.AspNetCore.Swagger;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Sample.Silo
+namespace Sample.Silo.Api
 {
     public class ApiService : IHostedService
     {
@@ -68,17 +67,5 @@ namespace Sample.Silo
 
         public Task StopAsync(CancellationToken cancellationToken) =>
             host.StopAsync(cancellationToken);
-    }
-
-    public static class ApiServiceExtensions
-    {
-        public static IHostBuilder UseApiService(this IHostBuilder hostBuilder)
-        {
-            hostBuilder.ConfigureServices(services =>
-            {
-                services.AddHostedService<ApiService>();
-            });
-            return hostBuilder;
-        }
     }
 }

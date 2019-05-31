@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Orleans;
 using Orleans.Hosting;
 using Sample.Grains;
+using Sample.Silo.Api;
 using System.Threading.Tasks;
 
 namespace Sample.Silo
@@ -30,6 +31,8 @@ namespace Sample.Silo
                     {
                         options.SuppressStatusMessages = true;
                     });
+
+                    services.AddHostedService<ApiService>();
                 })
                 .UseOrleans(builder =>
                 {
@@ -43,7 +46,6 @@ namespace Sample.Silo
                         options.HideTrace = true;
                     });
                 })
-                .UseApiService()
                 .RunConsoleAsync();
         }
     }

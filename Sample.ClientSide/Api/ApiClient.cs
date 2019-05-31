@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Options;
 using Sample.Models;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -17,7 +18,7 @@ namespace Sample.ClientSide.Api
             this.options = options.Value;
         }
 
-        public Task<WeatherInfo[]> GetWeatherForecastAsync() =>
-            client.GetJsonAsync<WeatherInfo[]>($"{options.BaseAddress}/Weather");
+        public Task<IEnumerable<WeatherInfo>> GetWeatherForecastAsync() =>
+            client.GetJsonAsync<IEnumerable<WeatherInfo>>($"{options.BaseAddress}/Weather");
     }
 }
