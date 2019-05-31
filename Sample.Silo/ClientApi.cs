@@ -24,7 +24,7 @@ namespace Sample.Silo
                     services.AddSingleton(client);
                     services.AddMvc()
                         .SetCompatibilityVersion(CompatibilityVersion.Latest)
-                        .AddApplicationPart(typeof(DummyController).Assembly)
+                        .AddApplicationPart(typeof(WeatherController).Assembly)
                         .AddControllersAsServices();
                     services.AddSwaggerGen();
                 })
