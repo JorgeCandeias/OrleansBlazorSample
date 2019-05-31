@@ -41,6 +41,10 @@ namespace Sample.Silo
                         manager.AddApplicationPart(typeof(WeatherGrain).Assembly).WithReferences();
                     });
                     builder.UseLocalhostClustering();
+                    builder.AddAzureTableGrainStorageAsDefault(options =>
+                    {
+                        options.ConnectionString = "UseDevelopmentStorage=true";
+                    });
                     builder.UseDashboard(options =>
                     {
                         options.HideTrace = true;
