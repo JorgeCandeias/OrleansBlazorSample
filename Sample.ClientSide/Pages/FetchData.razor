@@ -1,5 +1,5 @@
 ﻿@page "/fetchdata"
-@inject HttpClient Http
+@inject ApiClient ApiClient
 
 <h1>Weather forecast</h1>
 
@@ -35,11 +35,13 @@ else
 }
 
 @functions {
-    WeatherForecast[] forecasts;
+
+    WeatherInfo[] forecasts;
 
     protected override async Task OnInitAsync()
     {
-        forecasts = await Http.GetJsonAsync<WeatherForecast[]>("sample-data/weather.json");
+        //forecasts = await Http.GetJsonAsync<WeatherForecast[]>("http://localhost:8081/api/Weather");
+        forecasts = await ApiClient.GetWeatherForecastAsync();
     }
 
     class WeatherForecast

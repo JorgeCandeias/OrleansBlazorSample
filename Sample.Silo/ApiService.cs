@@ -37,9 +37,21 @@ namespace Sample.Silo
                             Version = "v0"
                         });
                     });
+
+                    services.AddCors(options =>
+                    {
+                        options.AddPolicy(nameof(ApiService),
+                            builder =>
+                            {
+                                builder.WithOrigins(
+                                    "http://localhost:62653",
+                                    "http://localhost:62654");
+                            });
+                    });
                 })
                 .Configure(app =>
                 {
+                    app.UseCors(nameof(ApiService));
                     app.UseSwagger();
                     app.UseSwaggerUI(options =>
                     {

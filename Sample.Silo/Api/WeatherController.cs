@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Orleans;
 using Sample.Grains;
-using Sample.Grains.Models;
+using Sample.Models;
 using System;
 using System.Collections.Immutable;
 using System.Threading.Tasks;
@@ -22,6 +22,6 @@ namespace Sample.Silo.Api
 
         [HttpGet]
         public Task<ImmutableList<WeatherInfo>> GetAsync() =>
-            factory.GetGrain<IWeatherGrain>(Guid.Empty).GetLatestWeatherAsync();
+            factory.GetGrain<IWeatherGrain>(Guid.Empty).GetForecastAsync();
     }
 }

@@ -1,11 +1,13 @@
-﻿using Orleans.Concurrency;
-using System;
+﻿using System;
 
-namespace Sample.Grains.Models
+namespace Sample.Models
 {
-    [Immutable]
     public class WeatherInfo
     {
+        public WeatherInfo()
+        {
+        }
+
         public WeatherInfo(DateTime date, int temperatureC, string summary, int temperatureF)
         {
             Date = date;
@@ -14,9 +16,9 @@ namespace Sample.Grains.Models
             TemperatureF = temperatureF;
         }
 
-        public DateTime Date { get; }
-        public int TemperatureC { get; }
-        public string Summary { get; }
-        public int TemperatureF { get; }
+        public DateTime Date { get; set; }
+        public int TemperatureC { get; set; }
+        public string Summary { get; set; }
+        public int TemperatureF { get; set; }
     }
 }
