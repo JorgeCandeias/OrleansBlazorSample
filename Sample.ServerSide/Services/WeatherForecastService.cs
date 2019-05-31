@@ -1,25 +1,24 @@
+using Orleans;
+using Sample.Grains;
+using Sample.Models;
 using System;
-using System.Linq;
+using System.Collections.Immutable;
 using System.Threading.Tasks;
 
 namespace Sample.ServerSide.Data
 {
     public class WeatherForecastService
     {
-        private static string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
+        private readonly IClusterClient client;
 
-        public Task<WeatherForecast[]> GetForecastAsync(DateTime startDate)
+        public WeatherForecastService(IClusterClient client)
         {
-            var rng = new Random();
-            return Task.FromResult(Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = startDate.AddDays(index),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
-            }).ToArray());
+            this.client = client;
         }
+
+        public Task<ImmutableList<WeatherInfo>> GetForecastAsync() =>
+
+            client.GetGrain<IWeatherGrain>(Guid.Empty)
+                .GetForecastAsync();
     }
 }

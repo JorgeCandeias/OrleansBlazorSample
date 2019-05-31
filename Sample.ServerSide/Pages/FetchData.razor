@@ -36,10 +36,10 @@ else
 }
 
 @functions {
-    WeatherForecast[] forecasts;
+    ImmutableList<WeatherInfo> forecasts;
 
     protected override async Task OnInitAsync()
     {
-        forecasts = await ForecastService.GetForecastAsync(DateTime.Now);
+        forecasts = await ForecastService.GetForecastAsync();
     }
 }
