@@ -9,12 +9,13 @@
     }
 </ul>
 
-<input placeholder="Something todo" />
+<input placeholder="Something todo" bind="@newTodo" />
 <button onclick="@AddTodo">Add Todo</button>
 
 @functions {
 
     private List<TodoItem> todos = new List<TodoItem>();
+    private string newTodo;
 
     private void AddTodo()
     {
