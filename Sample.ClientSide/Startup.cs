@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Sample.ClientSide.Api;
+using Sample.ClientSide.Services;
 using System;
 
 namespace Sample.ClientSide
@@ -9,11 +9,10 @@ namespace Sample.ClientSide
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<ApiClient>()
-                .Configure<ApiClientOptions>(options =>
-                {
-                    options.BaseAddress = new Uri("http://localhost:8081/api");
-                });
+            services.AddApiService(options =>
+            {
+                options.BaseAddress = new Uri("http://localhost:8081/api");
+            });
         }
 
         public void Configure(IComponentsApplicationBuilder app)

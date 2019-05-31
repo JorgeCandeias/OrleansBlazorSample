@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Sample.ClientSide.Api
+namespace Sample.ClientSide.Services
 {
-    public class ApiClientOptions
+    public class ApiServiceOptions
     {
         public Uri BaseAddress { get; set; }
     }
