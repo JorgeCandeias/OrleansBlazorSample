@@ -5,7 +5,7 @@ using System;
 using System.Collections.Immutable;
 using System.Threading.Tasks;
 
-namespace Sample.ServerSide.Data
+namespace Sample.ServerSide.Services
 {
     public class WeatherForecastService
     {

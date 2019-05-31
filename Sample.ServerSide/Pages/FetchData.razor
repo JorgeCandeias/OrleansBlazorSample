@@ -1,5 +1,5 @@
 @page "/fetchdata"
-@using Sample.ServerSide.Data
+@using Sample.ServerSide.Services
 @inject WeatherForecastService ForecastService
 
 <h1>Weather forecast</h1>
@@ -36,6 +36,7 @@ else
 }
 
 @functions {
+
     ImmutableList<WeatherInfo> forecasts;
 
     protected override async Task OnInitAsync()
