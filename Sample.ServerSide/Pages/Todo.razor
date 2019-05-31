@@ -19,5 +19,13 @@
 
     private void AddTodo()
     {
+        if (!string.IsNullOrWhiteSpace(newTodo))
+        {
+            todos.Add(new TodoItem
+            {
+                Title = newTodo
+            });
+            newTodo = null;
+        }
     }
 }
