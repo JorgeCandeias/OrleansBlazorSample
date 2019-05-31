@@ -43,7 +43,7 @@ namespace Sample.Silo
                         options.HideTrace = true;
                     });
                 })
-                .UseClientApi()
+                .UseApiService()
                 .RunConsoleAsync();
         }
     }

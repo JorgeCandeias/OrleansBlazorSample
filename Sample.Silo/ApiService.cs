@@ -6,33 +6,46 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Orleans;
 using Sample.Silo.Api;
+using Swashbuckle.AspNetCore.Swagger;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Sample.Silo
 {
-    public class ClientApi : IHostedService
+    public class ApiService : IHostedService
     {
         private readonly IWebHost host;
 
-        public ClientApi(IClusterClient client)
+        public ApiService(IGrainFactory factory)
         {
             host = WebHost
                 .CreateDefaultBuilder()
                 .ConfigureServices(services =>
                 {
-                    services.AddSingleton(client);
+                    services.AddSingleton(factory);
+
                     services.AddMvc()
                         .SetCompatibilityVersion(CompatibilityVersion.Latest)
                         .AddApplicationPart(typeof(WeatherController).Assembly)
                         .AddControllersAsServices();
-                    services.AddSwaggerGen();
+
+                    services.AddSwaggerGen(options =>
+                    {
+                        options.SwaggerDoc("v0", new Info
+                        {
+                            Title = nameof(Sample),
+                            Version = "v0"
+                        });
+                    });
                 })
                 .Configure(app =>
                 {
-                    app.UseMvc();
                     app.UseSwagger();
-                    app.UseSwaggerUI();
+                    app.UseSwaggerUI(options =>
+                    {
+                        options.SwaggerEndpoint("/swagger/v0/swagger.json", nameof(Sample));
+                    });
+                    app.UseMvc();
                 })
                 .UseUrls("http://localhost:8081")
                 .Build();
@@ -45,13 +58,13 @@ namespace Sample.Silo
             host.StopAsync(cancellationToken);
     }
 
-    public static class ClientApiExtensions
+    public static class ApiServiceExtensions
     {
-        public static IHostBuilder UseClientApi(this IHostBuilder hostBuilder)
+        public static IHostBuilder UseApiService(this IHostBuilder hostBuilder)
         {
             hostBuilder.ConfigureServices(services =>
             {
-                services.AddHostedService<ClientApi>();
+                services.AddHostedService<ApiService>();
             });
             return hostBuilder;
         }
