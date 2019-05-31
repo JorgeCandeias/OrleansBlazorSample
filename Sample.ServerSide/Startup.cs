@@ -1,14 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Sample.ServerSide.Data;
+using Sample.ServerSide.Services;
 
 namespace Sample.ServerSide
 {
@@ -21,6 +16,7 @@ namespace Sample.ServerSide
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddSingleton<WeatherForecastService>();
+            services.AddClusterService();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
