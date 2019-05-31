@@ -2,10 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>Sample.Grains</RootNamespace>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Sample.Grains.Interfaces\Sample.Grains.Interfaces.csproj" />
-  </ItemGroup>
 
 </Project>
