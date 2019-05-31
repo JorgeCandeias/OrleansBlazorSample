@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Blazor.Hosting;
 
-namespace CounterSample.ClientSide
+namespace BasicSample.ClientSide
 {
     public class Program
     {

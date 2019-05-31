@@ -15,7 +15,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "CounterSample.ClientSide": {
+    "BasicSample.ClientSide": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
