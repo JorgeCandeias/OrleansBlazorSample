@@ -23,7 +23,7 @@ namespace Sample.ServerSide.Services
             var itemKeys = await client.GetGrain<ITodoManagerGrain>(ownerKey)
                 .GetAllAsync();
 
-            // fan out to get the individual items from the cluster
+            // fan out to get the individual items from the cluster in parallel
             var tasks = new List<Task<Immutable<TodoItem>>>(itemKeys.Count);
             foreach (var itemKey in itemKeys)
             {
