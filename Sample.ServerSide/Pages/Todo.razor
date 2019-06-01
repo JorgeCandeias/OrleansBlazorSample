@@ -10,6 +10,9 @@
             <div class="input-group-text">
                 <input type="checkbox" checked="@todo.IsDone" onchange="@(async e => await HandleTodoDoneAsync(todo, (bool)e.Value))" />
             </div>
+            <button class="btn btn-outline-secondary" type="button">
+                <span class="oi oi-trash" aria-hidden="true"></span>
+            </button>
         </div>
         <input class="form-control" value="@todo.Title" onchange="@(async e => await HandleTodoTitleChangeAsync(todo, (string)e.Value))" />
     </div>

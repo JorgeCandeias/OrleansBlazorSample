@@ -28,6 +28,9 @@ namespace Sample.ClientSide.Services
 
         public Task SetTodoAsync(TodoItem item) =>
             client.PostJsonAsync($"{options.BaseAddress}/todo", item);
+
+        public Task DeleteTodoAsync(Guid itemKey) =>
+            client.DeleteAsync($"{options.BaseAddress}/todo/{itemKey}");
     }
 
     public static class ApiServiceBuilderExtensions

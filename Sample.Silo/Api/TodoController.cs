@@ -29,6 +29,12 @@ namespace Sample.Silo.Api
             return result.Value;
         }
 
+        [HttpDelete("{itemKey}")]
+        public async Task DeleteAsync([Required] Guid itemKey)
+        {
+            await factory.GetGrain<ITodoGrain>(itemKey).ClearAsync();
+        }
+
         [HttpGet("list/{ownerKey}", Name = "list")]
         public async Task<ImmutableArray<TodoItem>> ListAsync([Required] Guid ownerKey)
         {

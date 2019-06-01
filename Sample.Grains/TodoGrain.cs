@@ -42,6 +42,26 @@ namespace Sample.Grains
                 .Ignore();
         }
 
+        public async Task ClearAsync()
+        {
+            if (state.State.Item == null) return;
+
+            // hold on to the keys
+            var itemKey = state.State.Item.Key;
+            var ownerKey = state.State.Item.OwnerKey;
+
+            // clear the state
+            await state.ClearStateAsync();
+
+            // notify listeners - best effort only
+            GetStreamProvider("SMS").GetStream<TodoNotification>(ownerKey, nameof(ITodoGrain))
+                .OnNextAsync(new TodoNotification(itemKey, null))
+                .Ignore();
+
+            // no need to stay alive anymore
+            DeactivateOnIdle();
+        }
+
         public class State
         {
             public TodoItem Item { get; set; }
