@@ -7,11 +7,8 @@
     @foreach (var todo in todos)
     {
         <li>
-            <!-- Demonstrates manual binding - whis allows us to save the item to orleans on every click -->
             <input type="checkbox" checked="@todo.IsDone" onchange="@(async e => await HandleTodoDoneAsync(todo, (bool)e.Value))" />
-
-            <!-- Demonstrates standard two-way binding -->
-            <input bind="@todo.Title" />
+            <input value="@todo.Title" onchange="@(async e => await HandleTodoTitleChangeAsync(todo, (string)e.Value))" />
         </li>
     }
 </ul>
@@ -59,6 +56,13 @@
     private async Task HandleTodoDoneAsync(TodoItem item, bool isDone)
     {
         item.IsDone = isDone;
+
+        await ApiService.SetTodoAsync(item);
+    }
+
+    private async Task HandleTodoTitleChangeAsync(TodoItem item, string title)
+    {
+        item.Title = title;
 
         await ApiService.SetTodoAsync(item);
     }

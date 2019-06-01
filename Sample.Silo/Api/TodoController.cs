@@ -23,7 +23,6 @@ namespace Sample.Silo.Api
         }
 
         [HttpGet("{itemKey}")]
-        //[SwaggerOperation("todo-get")]
         public async Task<TodoItem> GetAsync([Required] Guid itemKey)
         {
             var result = await factory.GetGrain<ITodoGrain>(itemKey).GetAsync();
@@ -31,7 +30,6 @@ namespace Sample.Silo.Api
         }
 
         [HttpGet("list/{ownerKey}", Name = "list")]
-        //[SwaggerOperation("todo-list")]
         public async Task<ImmutableArray<TodoItem>> ListAsync([Required] Guid ownerKey)
         {
             // get all item keys for this owner
