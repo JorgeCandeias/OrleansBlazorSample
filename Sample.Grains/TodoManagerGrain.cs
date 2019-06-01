@@ -36,8 +36,8 @@ namespace Sample.Grains
             return state.WriteStateAsync();
         }
 
-        public Task<ImmutableList<Guid>> GetAllAsync() =>
-            Task.FromResult(state.State.Items.ToImmutableList());
+        public Task<ImmutableArray<Guid>> GetAllAsync() =>
+            Task.FromResult(ImmutableArray.CreateRange(state.State.Items));
 
         public class State
         {

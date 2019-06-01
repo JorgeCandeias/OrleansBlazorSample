@@ -1,4 +1,5 @@
 ﻿@page "/todo"
+@inject ApiService ApiService
 
 <h1>Todo (@todos.Count(todo => !todo.IsDone))</h1>
 
@@ -6,30 +7,59 @@
     @foreach (var todo in todos)
     {
         <li>
-            <input type="checkbox" bind="@todo.IsDone" />
+            <!-- Demonstrates manual binding - whis allows us to save the item to orleans on every click -->
+            <input type="checkbox" checked="@todo.IsDone" onchange="@(async e => await HandleTodoDoneAsync(todo, (bool)e.Value))" />
+
+            <!-- Demonstrates standard two-way binding -->
             <input bind="@todo.Title" />
         </li>
     }
 </ul>
 
 <input placeholder="Something todo" bind="@newTodo" />
-<button onclick="@AddTodo">Add Todo</button>
+<button onclick="@AddTodoAsync">Add Todo</button>
 
 @functions {
 
+    private Guid ownerKey = Guid.Empty;
     private List<TodoItem> todos = new List<TodoItem>();
     private string newTodo;
 
-    private void AddTodo()
+    protected override async Task OnInitAsync()
+    {
+        todos = (await ApiService.GetTodosAsync(ownerKey)).ToList();
+
+        await base.OnInitAsync();
+    }
+
+    private async Task AddTodoAsync()
     {
         if (!string.IsNullOrWhiteSpace(newTodo))
         {
-            todos.Add(new TodoItem
+            // create a new todo
+            var todo = new TodoItem
             {
+                Key = Guid.NewGuid(),
+                OwnerKey = ownerKey,
+                IsDone = false,
                 Title = newTodo
-            });
+            };
+
+            // add it to the cluster
+            await ApiService.SetTodoAsync(todo);
+
+            // show it on the user interface
+            todos.Add(todo);
+
+            // reset the box
             newTodo = null;
         }
     }
 
+    private async Task HandleTodoDoneAsync(TodoItem item, bool isDone)
+    {
+        item.IsDone = isDone;
+
+        await ApiService.SetTodoAsync(item);
+    }
 }

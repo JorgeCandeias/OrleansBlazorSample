@@ -3,7 +3,9 @@ using Orleans.Concurrency;
 using Sample.Grains;
 using Sample.Models;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading.Tasks;
 
 namespace Sample.ServerSide.Services
@@ -17,27 +19,34 @@ namespace Sample.ServerSide.Services
             this.client = client;
         }
 
-        public async Task<IList<TodoItem>> GetAllAsync(Guid ownerKey)
+        public async Task<ImmutableArray<TodoItem>> GetAllAsync(Guid ownerKey)
         {
             // get all the todo item keys for this owner
             var itemKeys = await client.GetGrain<ITodoManagerGrain>(ownerKey)
                 .GetAllAsync();
 
             // fan out to get the individual items from the cluster in parallel
-            var tasks = new List<Task<Immutable<TodoItem>>>(itemKeys.Count);
-            foreach (var itemKey in itemKeys)
+            var tasks = ArrayPool<Task<Immutable<TodoItem>>>.Shared.Rent(itemKeys.Length);
+            try
             {
-                tasks.Add(client.GetGrain<ITodoGrain>(itemKey).GetAsync());
-            }
+                // issue all individual requests at the same time
+                for (var i = 0; i < itemKeys.Length; ++i)
+                {
+                    tasks[i] = client.GetGrain<ITodoGrain>(itemKeys[i]).GetAsync();
+                }
 
-            // gather all results as they come
-            var list = new List<TodoItem>(itemKeys.Count);
-            foreach (var task in tasks)
+                // build the result as requests complete
+                var result = ImmutableArray.CreateBuilder<TodoItem>(itemKeys.Length);
+                foreach (var task in tasks)
+                {
+                    result.Add((await task).Value);
+                }
+                return result.ToImmutable();
+            }
+            finally
             {
-                list.Add((await task).Value);
+                ArrayPool<Task<Immutable<TodoItem>>>.Shared.Return(tasks);
             }
-
-            return list;
         }
 
         public Task SetAsync(TodoItem item) =>

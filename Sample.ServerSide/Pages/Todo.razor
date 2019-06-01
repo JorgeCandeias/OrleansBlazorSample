@@ -1,5 +1,4 @@
 ﻿@page "/todo"
-@using Sample.ServerSide.Services
 @inject TodoService TodoService
 
 <h1>Todo (@todos.Count(todo => !todo.IsDone))</h1>

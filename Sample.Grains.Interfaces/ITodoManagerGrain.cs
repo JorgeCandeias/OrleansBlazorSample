@@ -9,6 +9,6 @@ namespace Sample.Grains
     {
         Task RegisterAsync(Guid itemKey);
 
-        Task<ImmutableList<Guid>> GetAllAsync();
+        Task<ImmutableArray<Guid>> GetAllAsync();
     }
 }
