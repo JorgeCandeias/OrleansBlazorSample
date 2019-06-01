@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Orleans;
+using Sample.Grains;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ namespace Sample.ServerSide.Services
             this.logger = logger;
 
             Client = new ClientBuilder()
+                .ConfigureApplicationParts(manager => manager.AddApplicationPart(typeof(IWeatherGrain).Assembly).WithReferences())
                 .UseLocalhostClustering()
                 .Build();
         }

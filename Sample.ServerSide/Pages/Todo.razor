@@ -1,4 +1,6 @@
 ﻿@page "/todo"
+@using Sample.ServerSide.Services
+@inject TodoService TodoService
 
 <h1>Todo (@todos.Count(todo => !todo.IsDone))</h1>
 
@@ -6,29 +8,54 @@
     @foreach (var todo in todos)
     {
         <li>
-            <input type="checkbox" bind="@todo.IsDone" />
+            <input type="checkbox" bind="@todo.IsDone"/>
             <input bind="@todo.Title" />
         </li>
     }
 </ul>
 
 <input placeholder="Something todo" bind="@newTodo" />
-<button onclick="@AddTodo">Add Todo</button>
+<button onclick="@AddTodoAsync">Add Todo</button>
 
 @functions {
 
-    private List<TodoItem> todos = new List<TodoItem>();
+    private Guid ownerKey = Guid.Empty;
+    private IList<TodoItem> todos = new List<TodoItem>();
     private string newTodo;
 
-    private void AddTodo()
+    protected override async Task OnInitAsync()
+    {
+        todos = await TodoService.GetAllAsync(ownerKey);
+
+        await base.OnInitAsync();
+    }
+
+    private async Task AddTodoAsync()
     {
         if (!string.IsNullOrWhiteSpace(newTodo))
         {
-            todos.Add(new TodoItem
+            // create a new todo
+            var todo = new TodoItem
             {
+                Key = Guid.NewGuid(),
+                OwnerKey = ownerKey,
+                IsDone = false,
                 Title = newTodo
-            });
+            };
+
+            // add it to the cluster
+            await TodoService.SetAsync(todo);
+
+            // show it on the user interface
+            todos.Add(todo);
+
+            // reset the box
             newTodo = null;
         }
+    }
+
+    private Task SetTodoAsync(UIEventArgs args)
+    {
+        return Task.CompletedTask;
     }
 }
