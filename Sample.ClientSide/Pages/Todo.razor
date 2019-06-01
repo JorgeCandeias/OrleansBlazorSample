@@ -3,15 +3,17 @@
 
 <h1>Todo (@todos.Count(todo => !todo.IsDone))</h1>
 
-<ul>
-    @foreach (var todo in todos)
-    {
-        <li>
-            <input type="checkbox" checked="@todo.IsDone" onchange="@(async e => await HandleTodoDoneAsync(todo, (bool)e.Value))" />
-            <input value="@todo.Title" onchange="@(async e => await HandleTodoTitleChangeAsync(todo, (string)e.Value))" />
-        </li>
-    }
-</ul>
+@foreach (var todo in todos)
+{
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <div class="input-group-text">
+                <input type="checkbox" checked="@todo.IsDone" onchange="@(async e => await HandleTodoDoneAsync(todo, (bool)e.Value))" />
+            </div>
+        </div>
+        <input class="form-control" value="@todo.Title" onchange="@(async e => await HandleTodoTitleChangeAsync(todo, (string)e.Value))" />
+    </div>
+}
 
 <input placeholder="Something todo" bind="@newTodo" />
 <button onclick="@AddTodoAsync">Add Todo</button>
