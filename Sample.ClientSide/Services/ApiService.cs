@@ -24,10 +24,10 @@ namespace Sample.ClientSide.Services
             client.GetJsonAsync<IEnumerable<WeatherInfo>>($"{options.BaseAddress}/Weather");
 
         public Task<IEnumerable<TodoItem>> GetTodosAsync(Guid ownerKey) =>
-            client.GetJsonAsync<IEnumerable<TodoItem>>($"{options.BaseAddress}/Todo/{ownerKey}");
+            client.GetJsonAsync<IEnumerable<TodoItem>>($"{options.BaseAddress}/todo/list/{ownerKey}");
 
         public Task SetTodoAsync(TodoItem item) =>
-            client.PostJsonAsync<TodoItem>($"{options.BaseAddress}/Todo", item);
+            client.PostJsonAsync($"{options.BaseAddress}/todo", item);
     }
 
     public static class ApiServiceBuilderExtensions

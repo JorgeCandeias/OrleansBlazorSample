@@ -23,7 +23,7 @@ namespace Sample.Silo.Api
             this.factory = factory;
         }
 
-        [HttpGet]
+        [HttpGet("{itemKey}")]
         [SwaggerOperation("todo-get")]
         public async Task<TodoItem> GetAsync([Required] Guid itemKey)
         {
@@ -31,9 +31,9 @@ namespace Sample.Silo.Api
             return result.Value;
         }
 
-        [HttpGet("list")]
+        [HttpGet("list/{ownerKey}", Name = "list")]
         [SwaggerOperation("todo-list")]
-        public async Task<ImmutableArray<TodoItem>> ListAsync(Guid ownerKey)
+        public async Task<ImmutableArray<TodoItem>> ListAsync([Required] Guid ownerKey)
         {
             // get all item keys for this owner
             var keys = await factory.GetGrain<ITodoManagerGrain>(ownerKey).GetAllAsync();
@@ -65,7 +65,7 @@ namespace Sample.Silo.Api
             }
         }
 
-        public class PostModel
+        public class TodoItemModel
         {
             [Required]
             public Guid Key { get; set; }
@@ -81,7 +81,7 @@ namespace Sample.Silo.Api
         }
 
         [HttpPost]
-        public async Task<ActionResult> PostAsync([FromBody] PostModel model)
+        public async Task<ActionResult> PostAsync([FromBody] TodoItemModel todo)
         {
             if (!ModelState.IsValid)
             {
@@ -90,10 +90,10 @@ namespace Sample.Silo.Api
 
             var item = new TodoItem
             {
-                Key = model.Key,
-                Title = model.Title,
-                IsDone = model.IsDone,
-                OwnerKey = model.OwnerKey
+                Key = todo.Key,
+                Title = todo.Title,
+                IsDone = todo.IsDone,
+                OwnerKey = todo.OwnerKey
             };
 
             await factory.GetGrain<ITodoGrain>(item.Key)

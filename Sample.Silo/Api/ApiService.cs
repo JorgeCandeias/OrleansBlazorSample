@@ -42,9 +42,12 @@ namespace Sample.Silo.Api
                         options.AddPolicy(nameof(ApiService),
                             builder =>
                             {
-                                builder.WithOrigins(
-                                    "http://localhost:62653",
-                                    "http://localhost:62654");
+                                builder
+                                    .WithOrigins(
+                                        "http://localhost:62653",
+                                        "http://localhost:62654")
+                                    .AllowAnyMethod()
+                                    .AllowAnyHeader();
                             });
                     });
                 })
