@@ -43,6 +43,8 @@ namespace Sample.Silo
                     });
                     builder.UseLocalhostClustering();
                     builder.AddMemoryGrainStorageAsDefault();
+                    builder.AddSimpleMessageStreamProvider("SMS");
+                    builder.AddMemoryGrainStorage("PubSubStore");
                     builder.UseDashboard(options =>
                     {
                         options.HideTrace = true;

@@ -22,12 +22,20 @@
 @functions {
 
     private Guid ownerKey = Guid.Empty;
-    private List<TodoItem> todos = new List<TodoItem>();
+    private LinkedList<TodoItem> todos = new LinkedList<TodoItem>();
+    private Dictionary<Guid, LinkedListNode<TodoItem>> lookup = new Dictionary<Guid, LinkedListNode<TodoItem>>();
     private string newTodo;
 
     protected override async Task OnInitAsync()
     {
-        todos.AddRange(await TodoService.GetAllAsync(ownerKey));
+        // subscribe to updates for the current list
+        await TodoService.SubscribeAsync(ownerKey, notification => InvokeAsync(() => HandleNotificationAsync(notification)));
+
+        // get all items from the cluster
+        foreach (var item in await TodoService.GetAllAsync(ownerKey))
+        {
+            lookup[item.Key] = todos.AddLast(item);
+        }
 
         await base.OnInitAsync();
     }
@@ -48,12 +56,47 @@
             // add it to the cluster
             await TodoService.SetAsync(todo);
 
-            // show it on the user interface
-            todos.Add(todo);
+            // show it on the user interface and index it
+            lookup[todo.Key] = todos.AddLast(todo);
 
             // reset the box
             newTodo = null;
         }
+    }
+
+    private Task HandleNotificationAsync(TodoNotification notification)
+    {
+        LinkedListNode<TodoItem> node;
+
+        // was the item removed
+        if (notification.Item == null)
+        {
+            if (lookup.TryGetValue(notification.ItemKey, out node))
+            {
+                todos.Remove(node);
+                lookup.Remove(notification.ItemKey);
+                StateHasChanged();
+            }
+            return Task.CompletedTask;
+        }
+
+        // was the item updated
+        if (lookup.TryGetValue(notification.ItemKey, out node))
+        {
+            if (!node.Value.Equals(notification.Item))
+            {
+                lookup[notification.ItemKey] = todos.AddAfter(node, notification.Item);
+                todos.Remove(node);
+                StateHasChanged();
+            }
+            return Task.CompletedTask;
+        }
+
+        // the item was added
+        lookup[notification.ItemKey] = todos.AddLast(notification.Item);
+        StateHasChanged();
+
+        return Task.CompletedTask;
     }
 
     private async Task HandleTodoDoneAsync(TodoItem item, bool isDone)

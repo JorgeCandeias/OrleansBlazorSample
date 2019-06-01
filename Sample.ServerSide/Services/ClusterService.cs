@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Orleans;
+using Orleans.Hosting;
 using Sample.Grains;
 using System;
 using System.Threading;
@@ -20,6 +21,7 @@ namespace Sample.ServerSide.Services
             Client = new ClientBuilder()
                 .ConfigureApplicationParts(manager => manager.AddApplicationPart(typeof(IWeatherGrain).Assembly).WithReferences())
                 .UseLocalhostClustering()
+                .AddSimpleMessageStreamProvider("SMS")
                 .Build();
         }
 

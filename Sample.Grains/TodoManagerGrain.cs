@@ -10,7 +10,8 @@ namespace Sample.Grains
     public class TodoManagerGrain : Grain, ITodoManagerGrain
     {
         private readonly IPersistentState<State> state;
-        private readonly HashSet<Guid> keys = new HashSet<Guid>();
+
+        private Guid GrainKey => this.GetPrimaryKey();
 
         public TodoManagerGrain([PersistentState("State")] IPersistentState<State> state)
         {
@@ -21,19 +22,16 @@ namespace Sample.Grains
         {
             if (state.State.Items == null)
             {
-                state.State.Items = new LinkedList<Guid>();
+                state.State.Items = new HashSet<Guid>();
             }
 
             return base.OnActivateAsync();
         }
 
-        public Task RegisterAsync(Guid itemKey)
+        public async Task RegisterAsync(Guid itemKey)
         {
-            if (keys.Contains(itemKey)) return Task.CompletedTask;
-
-            keys.Add(itemKey);
-            state.State.Items.AddLast(itemKey);
-            return state.WriteStateAsync();
+            state.State.Items.Add(itemKey);
+            await state.WriteStateAsync();
         }
 
         public Task<ImmutableArray<Guid>> GetAllAsync() =>
@@ -41,7 +39,7 @@ namespace Sample.Grains
 
         public class State
         {
-            public LinkedList<Guid> Items { get; set; }
+            public HashSet<Guid> Items { get; set; }
         }
     }
 }

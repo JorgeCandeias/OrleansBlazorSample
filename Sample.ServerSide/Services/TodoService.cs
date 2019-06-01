@@ -1,10 +1,11 @@
-﻿using Orleans;
+﻿using Microsoft.Extensions.Logging;
+using Orleans;
 using Orleans.Concurrency;
+using Orleans.Streams;
 using Sample.Grains;
 using Sample.Models;
 using System;
 using System.Buffers;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Threading.Tasks;
 
@@ -12,10 +13,12 @@ namespace Sample.ServerSide.Services
 {
     public class TodoService
     {
+        private readonly ILogger<TodoService> logger;
         private readonly IClusterClient client;
 
-        public TodoService(IClusterClient client)
+        public TodoService(ILogger<TodoService> logger, IClusterClient client)
         {
+            this.logger = logger;
             this.client = client;
         }
 
@@ -37,7 +40,7 @@ namespace Sample.ServerSide.Services
 
                 // build the result as requests complete
                 var result = ImmutableArray.CreateBuilder<TodoItem>(itemKeys.Length);
-                for(var i = 0; i < itemKeys.Length; ++i)
+                for (var i = 0; i < itemKeys.Length; ++i)
                 {
                     var item = await tasks[i];
                     result.Add(item.Value);
@@ -52,5 +55,32 @@ namespace Sample.ServerSide.Services
 
         public Task SetAsync(TodoItem item) =>
             client.GetGrain<ITodoGrain>(item.Key).SetAsync(item.AsImmutable());
+
+        public Task SubscribeAsync(Guid ownerKey, Func<TodoNotification, Task> action) =>
+            client.GetStreamProvider("SMS")
+                .GetStream<TodoNotification>(ownerKey, nameof(ITodoGrain))
+                .SubscribeAsync(new TodoItemObserver(logger, action));
+
+        private class TodoItemObserver : IAsyncObserver<TodoNotification>
+        {
+            private readonly ILogger<TodoService> logger;
+            private readonly Func<TodoNotification, Task> action;
+
+            public TodoItemObserver(ILogger<TodoService> logger, Func<TodoNotification, Task> action)
+            {
+                this.logger = logger;
+                this.action = action;
+            }
+
+            public Task OnCompletedAsync() => Task.CompletedTask;
+
+            public Task OnErrorAsync(Exception ex)
+            {
+                logger.LogError(ex, ex.Message);
+                return Task.CompletedTask;
+            }
+
+            public Task OnNextAsync(TodoNotification item, StreamSequenceToken token = null) => action(item);
+        }
     }
 }

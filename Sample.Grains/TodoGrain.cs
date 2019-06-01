@@ -35,6 +35,11 @@ namespace Sample.Grains
             // register the item with its owner list
             await GrainFactory.GetGrain<ITodoManagerGrain>(item.Value.OwnerKey)
                 .RegisterAsync(item.Value.Key);
+
+            // notify listeners - best effort only
+            GetStreamProvider("SMS").GetStream<TodoNotification>(item.Value.OwnerKey, nameof(ITodoGrain))
+                .OnNextAsync(new TodoNotification(item.Value.Key, item.Value))
+                .Ignore();
         }
 
         public class State
