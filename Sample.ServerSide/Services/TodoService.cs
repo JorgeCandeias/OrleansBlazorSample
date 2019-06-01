@@ -37,9 +37,10 @@ namespace Sample.ServerSide.Services
 
                 // build the result as requests complete
                 var result = ImmutableArray.CreateBuilder<TodoItem>(itemKeys.Length);
-                foreach (var task in tasks)
+                for(var i = 0; i < itemKeys.Length; ++i)
                 {
-                    result.Add((await task).Value);
+                    var item = await tasks[i];
+                    result.Add(item.Value);
                 }
                 return result.ToImmutable();
             }

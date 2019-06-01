@@ -22,12 +22,12 @@
 @functions {
 
     private Guid ownerKey = Guid.Empty;
-    private IList<TodoItem> todos = new List<TodoItem>();
+    private List<TodoItem> todos = new List<TodoItem>();
     private string newTodo;
 
     protected override async Task OnInitAsync()
     {
-        todos = await TodoService.GetAllAsync(ownerKey);
+        todos.AddRange(await TodoService.GetAllAsync(ownerKey));
 
         await base.OnInitAsync();
     }

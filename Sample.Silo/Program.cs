@@ -43,14 +43,6 @@ namespace Sample.Silo
                     });
                     builder.UseLocalhostClustering();
                     builder.AddMemoryGrainStorageAsDefault();
-                    /*
-                    builder.AddAzureTableGrainStorageAsDefault(options =>
-                    {
-                        options.ConnectionString = "UseDevelopmentStorage=true";
-                        options.DeleteStateOnClear = true;
-                        options.TypeNameHandling = TypeNameHandling.None;
-                    });
-                    */
                     builder.UseDashboard(options =>
                     {
                         options.HideTrace = true;

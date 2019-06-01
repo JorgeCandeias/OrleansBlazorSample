@@ -23,14 +23,15 @@ namespace Sample.ServerSide.Services
                 .Build();
         }
 
-        public Task StartAsync(CancellationToken cancellationToken) =>
-
-            Client.Connect(async error =>
+        public async Task StartAsync(CancellationToken cancellationToken)
+        {
+            await Client.Connect(async error =>
             {
                 logger.LogError(error, error.Message);
                 await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
                 return true;
             });
+        }
 
         public Task StopAsync(CancellationToken cancellationToken) => Client.Close();
 
@@ -42,8 +43,8 @@ namespace Sample.ServerSide.Services
         public static IServiceCollection AddClusterService(this IServiceCollection services)
         {
             services.AddSingleton<ClusterService>();
-            services.AddSingleton(_ => _.GetService<ClusterService>().Client);
             services.AddSingleton<IHostedService>(_ => _.GetService<ClusterService>());
+            services.AddTransient(_ => _.GetService<ClusterService>().Client);
             return services;
         }
     }
