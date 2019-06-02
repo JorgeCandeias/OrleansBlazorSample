@@ -63,6 +63,9 @@ namespace Sample.ServerSide.Services
         public Task SetAsync(TodoItem item) =>
             client.GetGrain<ITodoGrain>(item.Key).SetAsync(item);
 
+        public Task DeleteAsync(Guid itemKey) =>
+            client.GetGrain<ITodoGrain>(itemKey).ClearAsync();
+
         public Task SubscribeAsync(Guid ownerKey, Func<TodoNotification, Task> action) =>
             client.GetStreamProvider("SMS")
                 .GetStream<TodoNotification>(ownerKey, nameof(ITodoGrain))
