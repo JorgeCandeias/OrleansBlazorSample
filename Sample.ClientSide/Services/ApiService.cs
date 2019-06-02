@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Sample.ClientSide.Models;
 using Sample.Models;
 using System;
 using System.Collections.Generic;
@@ -20,8 +21,8 @@ namespace Sample.ClientSide.Services
             this.options = options.Value;
         }
 
-        public Task<IEnumerable<WeatherInfo>> GetWeatherForecastAsync() =>
-            client.GetJsonAsync<IEnumerable<WeatherInfo>>($"{options.BaseAddress}/Weather");
+        public Task<WeatherInfo[]> GetWeatherForecastAsync() =>
+            client.GetJsonAsync<WeatherInfo[]>($"{options.BaseAddress}/Weather");
 
         public Task<IEnumerable<TodoItem>> GetTodosAsync(Guid ownerKey) =>
             client.GetJsonAsync<IEnumerable<TodoItem>>($"{options.BaseAddress}/todo/list/{ownerKey}");

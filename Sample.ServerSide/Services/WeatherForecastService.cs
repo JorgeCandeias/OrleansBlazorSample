@@ -1,6 +1,6 @@
 using Orleans;
 using Sample.Grains;
-using Sample.Models;
+using Sample.Grains.Models;
 using System;
 using System.Collections.Immutable;
 using System.Threading.Tasks;
@@ -16,7 +16,7 @@ namespace Sample.ServerSide.Services
             this.client = client;
         }
 
-        public Task<ImmutableList<WeatherInfo>> GetForecastAsync() =>
+        public Task<ImmutableArray<WeatherInfo>> GetForecastAsync() =>
 
             client.GetGrain<IWeatherGrain>(Guid.Empty)
                 .GetForecastAsync();

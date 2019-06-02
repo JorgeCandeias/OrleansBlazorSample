@@ -1,5 +1,5 @@
 ﻿using Orleans;
-using Sample.Models;
+using Sample.Grains.Models;
 using System.Collections.Immutable;
 using System.Threading.Tasks;
 
@@ -7,6 +7,6 @@ namespace Sample.Grains
 {
     public interface IWeatherGrain : IGrainWithGuidKey
     {
-        Task<ImmutableList<WeatherInfo>> GetForecastAsync();
+        Task<ImmutableArray<WeatherInfo>> GetForecastAsync();
     }
 }
