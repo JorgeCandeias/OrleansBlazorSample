@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Orleans;
-using Orleans.Concurrency;
 using Sample.Grains;
-using Sample.Models;
+using Sample.Grains.Models;
 using System;
 using System.Buffers;
 using System.Collections.Immutable;
@@ -23,11 +22,8 @@ namespace Sample.Silo.Api
         }
 
         [HttpGet("{itemKey}")]
-        public async Task<TodoItem> GetAsync([Required] Guid itemKey)
-        {
-            var result = await factory.GetGrain<ITodoGrain>(itemKey).GetAsync();
-            return result.Value;
-        }
+        public Task<TodoItem> GetAsync([Required] Guid itemKey) =>
+            factory.GetGrain<ITodoGrain>(itemKey).GetAsync();
 
         [HttpDelete("{itemKey}")]
         public async Task DeleteAsync([Required] Guid itemKey)
@@ -45,7 +41,7 @@ namespace Sample.Silo.Api
             if (keys.Length == 0) return ImmutableArray<TodoItem>.Empty;
 
             // fan out and get all individual items in parallel
-            var tasks = ArrayPool<Task<Immutable<TodoItem>>>.Shared.Rent(keys.Length);
+            var tasks = ArrayPool<Task<TodoItem>>.Shared.Rent(keys.Length);
             try
             {
                 // issue all requests at the same time
@@ -58,13 +54,13 @@ namespace Sample.Silo.Api
                 var result = ImmutableArray.CreateBuilder<TodoItem>(tasks.Length);
                 for (var i = 0; i < keys.Length; ++i)
                 {
-                    result.Add((await tasks[i]).Value);
+                    result.Add(await tasks[i]);
                 }
                 return result.ToImmutable();
             }
             finally
             {
-                ArrayPool<Task<Immutable<TodoItem>>>.Shared.Return(tasks);
+                ArrayPool<Task<TodoItem>>.Shared.Return(tasks);
             }
         }
 
@@ -84,24 +80,15 @@ namespace Sample.Silo.Api
         }
 
         [HttpPost]
-        public async Task<ActionResult> PostAsync([FromBody] TodoItemModel todo)
+        public async Task<ActionResult> PostAsync([FromBody] TodoItemModel model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var item = new TodoItem
-            {
-                Key = todo.Key,
-                Title = todo.Title,
-                IsDone = todo.IsDone,
-                OwnerKey = todo.OwnerKey
-            };
-
-            await factory.GetGrain<ITodoGrain>(item.Key)
-                .SetAsync(item.AsImmutable());
-
+            var item = new TodoItem(model.Key, model.Title, model.IsDone, model.OwnerKey);
+            await factory.GetGrain<ITodoGrain>(item.Key).SetAsync(item);
             return Ok();
         }
     }

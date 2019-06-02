@@ -1,7 +1,6 @@
 ﻿using Orleans;
-using Orleans.Concurrency;
 using Orleans.Runtime;
-using Sample.Models;
+using Sample.Grains.Models;
 using System;
 using System.Threading.Tasks;
 
@@ -18,27 +17,27 @@ namespace Sample.Grains
             this.state = state;
         }
 
-        public Task<Immutable<TodoItem>> GetAsync() => Task.FromResult(state.State.Item.AsImmutable());
+        public Task<TodoItem> GetAsync() => Task.FromResult(state.State.Item);
 
-        public async Task SetAsync(Immutable<TodoItem> item)
+        public async Task SetAsync(TodoItem item)
         {
             // ensure the key is consistent
-            if (item.Value.Key != GrainKey)
+            if (item.Key != GrainKey)
             {
                 throw new InvalidOperationException();
             }
 
             // save the item
-            state.State.Item = item.Value;
+            state.State.Item = item;
             await state.WriteStateAsync();
 
             // register the item with its owner list
-            await GrainFactory.GetGrain<ITodoManagerGrain>(item.Value.OwnerKey)
-                .RegisterAsync(item.Value.Key);
+            await GrainFactory.GetGrain<ITodoManagerGrain>(item.OwnerKey)
+                .RegisterAsync(item.Key);
 
             // notify listeners - best effort only
-            GetStreamProvider("SMS").GetStream<TodoNotification>(item.Value.OwnerKey, nameof(ITodoGrain))
-                .OnNextAsync(new TodoNotification(item.Value.Key, item.Value))
+            GetStreamProvider("SMS").GetStream<TodoNotification>(item.OwnerKey, nameof(ITodoGrain))
+                .OnNextAsync(new TodoNotification(item.Key, item))
                 .Ignore();
         }
 

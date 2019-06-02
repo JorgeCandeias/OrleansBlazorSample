@@ -47,13 +47,7 @@
         if (!string.IsNullOrWhiteSpace(newTodo))
         {
             // create a new todo
-            var todo = new TodoItem
-            {
-                Key = Guid.NewGuid(),
-                OwnerKey = ownerKey,
-                IsDone = false,
-                Title = newTodo
-            };
+            var todo = new TodoItem(Guid.NewGuid(), newTodo, false, ownerKey);
 
             // add it to the cluster
             await TodoService.SetAsync(todo);
@@ -103,14 +97,14 @@
 
     private async Task HandleTodoDoneAsync(TodoItem item, bool isDone)
     {
-        item.IsDone = isDone;
+        lookup[item.Key].Value = item.WithIsDone(isDone);
 
         await TodoService.SetAsync(item);
     }
 
     private async Task HandleTodoTitleChangeAsync(TodoItem item, string title)
     {
-        item.Title = title;
+        lookup[item.Key].Value = item.WithTitle(title);
 
         await TodoService.SetAsync(item);
     }

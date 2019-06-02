@@ -1,14 +1,15 @@
 ﻿using Orleans;
-using Orleans.Concurrency;
-using Sample.Models;
+using Sample.Grains.Models;
 using System.Threading.Tasks;
 
 namespace Sample.Grains
 {
     public interface ITodoGrain : IGrainWithGuidKey
     {
-        Task SetAsync(Immutable<TodoItem> item);
+        Task SetAsync(TodoItem item);
+
         Task ClearAsync();
-        Task<Immutable<TodoItem>> GetAsync();
+
+        Task<TodoItem> GetAsync();
     }
 }

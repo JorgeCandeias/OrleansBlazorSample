@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Sample.ClientSide.Models;
-using Sample.Models;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;

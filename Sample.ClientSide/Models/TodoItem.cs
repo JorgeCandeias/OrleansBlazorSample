@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Sample.Models
+namespace Sample.ClientSide.Models
 {
     public class TodoItem : IEquatable<TodoItem>
     {

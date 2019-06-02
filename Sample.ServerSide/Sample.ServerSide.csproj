@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Sample.Grains.Interfaces\Sample.Grains.Interfaces.csproj" />
-    <ProjectReference Include="..\Sample.Models\Sample.Models.csproj" />
   </ItemGroup>
 
 </Project>

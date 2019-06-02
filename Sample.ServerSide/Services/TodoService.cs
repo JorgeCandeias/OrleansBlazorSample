@@ -1,9 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using Orleans;
-using Orleans.Concurrency;
 using Orleans.Streams;
 using Sample.Grains;
-using Sample.Models;
+using Sample.Grains.Models;
 using System;
 using System.Buffers;
 using System.Collections.Immutable;
@@ -29,7 +28,7 @@ namespace Sample.ServerSide.Services
                 .GetAllAsync();
 
             // fan out to get the individual items from the cluster in parallel
-            var tasks = ArrayPool<Task<Immutable<TodoItem>>>.Shared.Rent(itemKeys.Length);
+            var tasks = ArrayPool<Task<TodoItem>>.Shared.Rent(itemKeys.Length);
             try
             {
                 // issue all individual requests at the same time
@@ -46,23 +45,23 @@ namespace Sample.ServerSide.Services
 
                     // we can get a null result if the individual grain failed to unregister
                     // in this case we can finish the job here
-                    if (item.Value == null)
+                    if (item == null)
                     {
                         await client.GetGrain<ITodoManagerGrain>(ownerKey).UnregisterAsync(itemKeys[i]);
                     }
 
-                    result.Add(item.Value);
+                    result.Add(item);
                 }
                 return result.ToImmutable();
             }
             finally
             {
-                ArrayPool<Task<Immutable<TodoItem>>>.Shared.Return(tasks);
+                ArrayPool<Task<TodoItem>>.Shared.Return(tasks);
             }
         }
 
         public Task SetAsync(TodoItem item) =>
-            client.GetGrain<ITodoGrain>(item.Key).SetAsync(item.AsImmutable());
+            client.GetGrain<ITodoGrain>(item.Key).SetAsync(item);
 
         public Task SubscribeAsync(Guid ownerKey, Func<TodoNotification, Task> action) =>
             client.GetStreamProvider("SMS")

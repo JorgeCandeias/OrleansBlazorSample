@@ -1,7 +1,7 @@
 ﻿using Orleans.Concurrency;
 using System;
 
-namespace Sample.Models
+namespace Sample.Grains.Models
 {
     [Immutable]
     public class TodoNotification
