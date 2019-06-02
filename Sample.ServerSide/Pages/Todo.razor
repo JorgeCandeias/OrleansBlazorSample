@@ -117,9 +117,9 @@
         return Task.CompletedTask;
     }
 
-    private void TryAddToCollection(TodoItem item)
+    private void TryUpdateCollection(TodoItem item)
     {
-        // we need to cater for reentrancy allowing a stream notification during ther await
+        // we need to cater for reentrancy allowing a stream notification during the previous await
         // the notification may have even have deleted the item - if so then deletion wins
         if (todos.TryGetValue(item.Key, out var current))
         {
@@ -135,14 +135,14 @@
     {
         var updated = item.WithIsDone(isDone);
         await TodoService.SetAsync(updated);
-        TryAddToCollection(updated);
+        TryUpdateCollection(updated);
     }
 
     private async Task HandleTodoTitleChangeAsync(TodoItem item, string title)
     {
         var updated = item.WithTitle(title);
         await TodoService.SetAsync(updated);
-        TryAddToCollection(updated);
+        TryUpdateCollection(updated);
     }
 
     private async Task HandleDeleteTodoAsync(TodoItem item)
