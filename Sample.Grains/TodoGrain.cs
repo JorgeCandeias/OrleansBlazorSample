@@ -44,11 +44,16 @@ namespace Sample.Grains
 
         public async Task ClearAsync()
         {
+            // fast path for already cleared state
             if (state.State.Item == null) return;
 
             // hold on to the keys
             var itemKey = state.State.Item.Key;
             var ownerKey = state.State.Item.OwnerKey;
+
+            // unregister from the registry
+            await GrainFactory.GetGrain<ITodoManagerGrain>(ownerKey)
+                .UnregisterAsync(itemKey);
 
             // clear the state
             await state.ClearStateAsync();

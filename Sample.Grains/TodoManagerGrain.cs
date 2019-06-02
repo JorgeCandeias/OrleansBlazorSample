@@ -34,6 +34,12 @@ namespace Sample.Grains
             await state.WriteStateAsync();
         }
 
+        public async Task UnregisterAsync(Guid itemKey)
+        {
+            state.State.Items.Remove(itemKey);
+            await state.WriteStateAsync();
+        }
+
         public Task<ImmutableArray<Guid>> GetAllAsync() =>
             Task.FromResult(ImmutableArray.CreateRange(state.State.Items));
 

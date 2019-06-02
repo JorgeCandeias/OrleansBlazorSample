@@ -43,6 +43,14 @@ namespace Sample.ServerSide.Services
                 for (var i = 0; i < itemKeys.Length; ++i)
                 {
                     var item = await tasks[i];
+
+                    // we can get a null result if the individual grain failed to unregister
+                    // in this case we can finish the job here
+                    if (item.Value == null)
+                    {
+                        await client.GetGrain<ITodoManagerGrain>(ownerKey).UnregisterAsync(itemKeys[i]);
+                    }
+
                     result.Add(item.Value);
                 }
                 return result.ToImmutable();
