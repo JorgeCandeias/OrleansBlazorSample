@@ -4,7 +4,7 @@ using System;
 namespace Sample.Grains.Models
 {
     [Immutable]
-    public class TodoItem
+    public class TodoItem : IEquatable<TodoItem>
     {
         public TodoItem(Guid key, string title, bool isDone, Guid ownerKey)
         {
@@ -18,6 +18,15 @@ namespace Sample.Grains.Models
         public string Title { get; }
         public bool IsDone { get; }
         public Guid OwnerKey { get; }
+
+        public bool Equals(TodoItem other)
+        {
+            if (other == null) return false;
+            return Key == other.Key
+                && Title == other.Title
+                && IsDone == other.IsDone
+                && OwnerKey == other.OwnerKey;
+        }
 
         public TodoItem WithIsDone(bool isDone) =>
             new TodoItem(Key, Title, isDone, OwnerKey);

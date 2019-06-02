@@ -97,15 +97,15 @@
 
     private async Task HandleTodoDoneAsync(TodoItem item, bool isDone)
     {
-        lookup[item.Key].Value = item.WithIsDone(isDone);
-
-        await TodoService.SetAsync(item);
+        var updated = item.WithIsDone(isDone);
+        lookup[item.Key].Value = updated;
+        await TodoService.SetAsync(updated);
     }
 
     private async Task HandleTodoTitleChangeAsync(TodoItem item, string title)
     {
-        lookup[item.Key].Value = item.WithTitle(title);
-
-        await TodoService.SetAsync(item);
+        var updated = item.WithTitle(title);
+        lookup[item.Key].Value = updated;
+        await TodoService.SetAsync(updated);
     }
 }

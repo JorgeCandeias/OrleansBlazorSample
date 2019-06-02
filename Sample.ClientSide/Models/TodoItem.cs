@@ -9,11 +9,14 @@ namespace Sample.ClientSide.Models
         public bool IsDone { get; set; }
         public Guid OwnerKey { get; set; }
 
-        public bool Equals(TodoItem other) =>
-            Key == other.Key &&
-            OwnerKey == other.OwnerKey &&
-            Title == other.Title &&
-            IsDone == other.IsDone;
+        public bool Equals(TodoItem other)
+        {
+            if (other == null) return false;
+            return Key == other.Key
+                && Title == other.Title
+                && IsDone == other.IsDone
+                && OwnerKey == other.OwnerKey;
+        }
 
         public override int GetHashCode() =>
             HashCode.Combine(Key, Title, IsDone, OwnerKey);
