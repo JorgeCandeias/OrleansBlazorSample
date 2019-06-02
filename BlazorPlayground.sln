@@ -11,7 +11,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Grains.Interfaces", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Silo", "Sample.Silo\Sample.Silo.csproj", "{699023C9-9C57-47C7-9B5D-2197371F51FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.ServerSide", "Sample.ServerSide\Sample.ServerSide.csproj", "{2D1A35D7-2352-482B-978E-789BB79299D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.ServerSide", "Sample.ServerSide\Sample.ServerSide.csproj", "{2D1A35D7-2352-482B-978E-789BB79299D6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E9C7CD12-BB82-46FF-AE3C-800FCFA3436D}"
+	ProjectSection(SolutionItems) = preProject
+		readme.md = readme.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

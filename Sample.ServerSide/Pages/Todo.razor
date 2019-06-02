@@ -1,5 +1,6 @@
 ﻿@page "/todo"
 @inject TodoService TodoService
+@implements IDisposable
 
 <h1>Todo (@todos.Count(todo => !todo.IsDone))</h1>
 
@@ -24,22 +25,37 @@
 @functions {
 
     private Guid ownerKey = Guid.Empty;
-    private LinkedList<TodoItem> todos = new LinkedList<TodoItem>();
-    private Dictionary<Guid, LinkedListNode<TodoItem>> lookup = new Dictionary<Guid, LinkedListNode<TodoItem>>();
+    private TodoKeyedCollection todos = new TodoKeyedCollection();
     private string newTodo;
+    private StreamSubscriptionHandle<TodoNotification> subscription;
 
     protected override async Task OnInitAsync()
     {
         // subscribe to updates for the current list
-        await TodoService.SubscribeAsync(ownerKey, notification => InvokeAsync(() => HandleNotificationAsync(notification)));
+        // note that the blazor task scheduler is reentrant
+        // therefore notifications can and will come through when the code is stuck at an await
+        subscription = await TodoService.SubscribeAsync(ownerKey, notification => InvokeAsync(() => HandleNotificationAsync(notification)));
 
         // get all items from the cluster
         foreach (var item in await TodoService.GetAllAsync(ownerKey))
         {
-            lookup[item.Key] = todos.AddLast(item);
+            todos.Add(item);
         }
 
         await base.OnInitAsync();
+    }
+
+    public void Dispose()
+    {
+        // unsubscribe from the orleans stream - best effort
+        try
+        {
+            subscription?.UnsubscribeAsync();
+        }
+        catch
+        {
+            // noop
+        }
     }
 
     private async Task AddTodoAsync()
@@ -49,73 +65,94 @@
             // create a new todo
             var todo = new TodoItem(Guid.NewGuid(), newTodo, false, ownerKey);
 
-            // add it to the cluster
+            // add it to the cluste
             await TodoService.SetAsync(todo);
 
-            // show it on the user interface and index it
-            lookup[todo.Key] = todos.AddLast(todo);
+            // the above this will generate a stream notification that may or may not have come through while we were awaiting the call
+            // therefore only add it to the interface if it is not there yet
+            if (todos.TryGetValue(todo.Key, out var current))
+            {
+                // latest one wins
+                if (todo.Timestamp > current.Timestamp)
+                {
+                    todos[todos.IndexOf(current)] = todo;
+                }
+            }
+            else
+            {
+                todos.Add(todo);
+            }
 
-            // reset the box
+            // reset the text box
             newTodo = null;
         }
     }
 
     private Task HandleNotificationAsync(TodoNotification notification)
     {
-        LinkedListNode<TodoItem> node;
-
         // was the item removed
         if (notification.Item == null)
         {
-            if (lookup.TryGetValue(notification.ItemKey, out node))
+            // attempt to remove it from the user interface
+            if (todos.Remove(notification.ItemKey))
             {
-                todos.Remove(node);
-                lookup.Remove(notification.ItemKey);
                 StateHasChanged();
             }
             return Task.CompletedTask;
         }
 
-        // was the item updated
-        if (lookup.TryGetValue(notification.ItemKey, out node))
+        if (todos.TryGetValue(notification.Item.Key, out var current))
         {
-            if (!node.Value.Equals(notification.Item))
+            // latest one wins
+            if (notification.Item.Timestamp > current.Timestamp)
             {
-                lookup[notification.ItemKey] = todos.AddAfter(node, notification.Item);
-                todos.Remove(node);
+                todos[todos.IndexOf(current)] = notification.Item;
                 StateHasChanged();
             }
             return Task.CompletedTask;
         }
 
-        // the item was added
-        lookup[notification.ItemKey] = todos.AddLast(notification.Item);
+        todos.Add(notification.Item);
         StateHasChanged();
-
         return Task.CompletedTask;
+    }
+
+    private void TryAddToCollection(TodoItem item)
+    {
+        // we need to cater for reentrancy allowing a stream notification during ther await
+        // the notification may have even have deleted the item - if so then deletion wins
+        if (todos.TryGetValue(item.Key, out var current))
+        {
+            // latest one wins
+            if (item.Timestamp > current.Timestamp)
+            {
+                todos[todos.IndexOf(current)] = item;
+            }
+        }
     }
 
     private async Task HandleTodoDoneAsync(TodoItem item, bool isDone)
     {
         var updated = item.WithIsDone(isDone);
-        lookup[item.Key].Value = updated;
         await TodoService.SetAsync(updated);
+        TryAddToCollection(updated);
     }
 
     private async Task HandleTodoTitleChangeAsync(TodoItem item, string title)
     {
         var updated = item.WithTitle(title);
-        lookup[item.Key].Value = updated;
         await TodoService.SetAsync(updated);
+        TryAddToCollection(updated);
     }
 
     private async Task HandleDeleteTodoAsync(TodoItem item)
     {
         await TodoService.DeleteAsync(item.Key);
-        if (lookup.TryGetValue(item.Key, out var node))
-        {
-            todos.Remove(node);
-            lookup.Remove(item.Key);
-        }
+        todos.Remove(item.Key);
+    }
+
+    private class TodoKeyedCollection : KeyedCollection<Guid, TodoItem>
+    {
+        protected override Guid GetKeyForItem(TodoItem item) => item.Key;
     }
 }

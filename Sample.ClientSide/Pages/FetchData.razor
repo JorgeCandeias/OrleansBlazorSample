@@ -36,22 +36,10 @@ else
 
 @functions {
 
-    IEnumerable<WeatherInfo> forecasts;
+    private WeatherInfo[] forecasts;
 
     protected override async Task OnInitAsync()
     {
-        //forecasts = await Http.GetJsonAsync<WeatherForecast[]>("http://localhost:8081/api/Weather");
         forecasts = await ApiService.GetWeatherForecastAsync();
-    }
-
-    class WeatherForecast
-    {
-        public DateTime Date { get; set; }
-
-        public int TemperatureC { get; set; }
-
-        public int TemperatureF { get; set; }
-
-        public string Summary { get; set; }
     }
 }
