@@ -1,4 +1,4 @@
-:warning: **This sample has moved to https://github.com/dotnet/orleans/tree/master/Samples**
+:warning: This sample has moved to the [Orleans samples repository](https://github.com/dotnet/orleans/tree/master/Samples)
 
 ## Orleans ASP.NET Core Blazor Sample
 
