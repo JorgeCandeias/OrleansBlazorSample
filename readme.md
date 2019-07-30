@@ -1,3 +1,5 @@
+:warning: **This sample has moved to https://github.com/dotnet/orleans/tree/master/Samples**
+
 ## Orleans ASP.NET Core Blazor Sample
 
 Orleans ASP.NET Core Blazor Sample targetting:
